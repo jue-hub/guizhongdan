@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>guizhongdan</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        background-image: url("./tex/gui.jpg");
+        background-size: cover;
+        background-attachment: fixed; /* 让背景图固定 */
+        background-position: center;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .hero {
+        position: relative;
+        height: 300px; /* 根据实际需要调整高度 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+        margin-bottom: 20px; /* 为了避免与页脚重叠，添加底部间距 */
+      }
+
+      .hero-text {
+        background: rgba(0, 0, 0, 0.5); /* 添加半透明背景以增强可读性 */
+        padding: 20px;
+        max-width: 600px;
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="notes.html">Notes</a></li>
+          <li><a href="add_note.html">Add Note</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="hero">
+        <div class="hero-text">
+          <h1>Welcome to My Reading Notes</h1>
+          <p>Explore and organize your reading notes.</p>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2024 My Reading Notes</p>
+    </footer>
+  </body>
+</html>

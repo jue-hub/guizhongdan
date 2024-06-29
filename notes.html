@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>guizhongdan</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        background-image: url("./tex/gui.jpg");
+        background-size: cover;
+        background-attachment: fixed; /* 让背景图固定 */
+        background-position: center;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* 保证内容铺满整个视窗 */
+      }
+
+      .hero {
+        position: relative;
+        flex: 0 0 auto; /* 不随内容增长而拉伸 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5); /* 半透明背景以增强可读性 */
+        padding: 20px;
+        max-width: 100%; /* 限制宽度 */
+        margin-bottom: 20px; /* 底部间距 */
+      }
+
+      .hero-text {
+        max-width: 600px; /* 最大宽度 */
+        margin: auto;
+      }
+
+      .content {
+        flex: 1 0 auto; /* 自动扩展以填充剩余空间 */
+        padding: 20px;
+      }
+
+      .note {
+        background: rgba(255, 255, 255, 0.9); /* 调整笔记背景颜色 */
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+        transition: transform 0.3s ease; /* 添加鼠标悬停效果 */
+        max-width: 90%; /* 限制笔记最大宽度 */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        position: relative; /* 用于定位按钮 */
+      }
+
+      .note:hover {
+        transform: scale(1.02); /* 悬停时放大效果 */
+      }
+
+      .note h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      .note p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+
+      .note-buttons {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .note-buttons button {
+        background-color: #4caf50; /* 绿色背景 */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .note-buttons button:hover {
+        background-color: #45a049; /* 悬停时变色 */
+      }
+
+      .full-text-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .full-text-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        text-align: left;
+      }
+
+      footer {
+        flex: 0 0 auto; /* 固定在底部 */
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="notes.html">Notes</a></li>
+          <li><a href="add_note.html">Add Note</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="hero">
+        <div class="hero-text">
+          <!-- <h1>My Notes</h1>-->
+        </div>
+      </div>
+      <div class="content">
+        <div id="notesContainer"></div>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2024 My Reading Notes</p>
+    </footer>
+    <div id="fullTextModal" class="full-text-modal">
+      <div class="full-text-content">
+        <span class="close">&times;</span>
+        <h2>Full Note</h2>
+        <div id="fullNoteContent"></div>
+      </div>
+    </div>
+    <script>
+      const notesContainer = document.getElementById("notesContainer");
+      const fullTextModal = document.getElementById("fullTextModal");
+      const fullNoteContent = document.getElementById("fullNoteContent");
+      let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+      function deleteNote() {
+        var password = prompt(
+          "Please enter your password to delete this note:"
+        );
+        // 检查密码是否正确，这里假设密码为 "123456"
+        if (password === "123456") {
+          // 用户输入正确密码，执行删除操作
+          alert("Note deleted!");
+          // 这里可以添加具体的删除逻辑
+        } else {
+          // 密码错误或者取消输入密码，不执行删除操作
+          alert("Incorrect password. Note deletion canceled.");
+        }
+      }
+
+      function displayNotes(reverse = false) {
+        notesContainer.innerHTML = ""; // 清空当前显示的笔记
+        const notesToShow = reverse ? notes.slice().reverse() : notes;
+        notesToShow.forEach((note, index) => {
+          const noteElement = document.createElement("div");
+          noteElement.className = "note";
+          // 只显示标题和前两行内容
+          const firstTwoLines = note.content
+            .split("\n")
+            .slice(0, 2)
+            .join("<br>");
+          noteElement.innerHTML = `
+                    <h2>${note.title}</h2>
+                    <p>${firstTwoLines}</p>
+                    <div class="note-buttons">
+                        <button onclick="showFullText(${index})">Full Text</button>
+                        <button onclick="deleteNote(${index})">Delete</button>
+                    </div>
+                `;
+          notesContainer.appendChild(noteElement);
+        });
+      }
+
+      function showFullText(index) {
+        const fullNote = notes[index];
+        const fullContent = fullNote.content.replace(/\n/g, "<br>"); // 将换行符转换为<br>标签
+        fullNoteContent.innerHTML = `
+        <h2>${fullNote.title}</h2>
+        <p>${fullContent}</p>
+    `;
+        fullTextModal.style.display = "block";
+      }
+
+      // 关闭全文模态框
+      const closeBtn = document.querySelector(".full-text-content .close");
+      if (closeBtn) {
+        closeBtn.onclick = function () {
+          fullTextModal.style.display = "none";
+        };
+      }
+
+      displayNotes(); // 初始显示笔记
+    </script>
+  </body>
+</html>
